@@ -104,75 +104,78 @@ class TestUsers(BaseAPI):
         for user_id in users_returned:
             assert not user_id['role'] == 'admin'
 
-    @nottest
     def test13_admin_can_create_admin_user(self):
         """Test13: As an admin, I can create an admin user"""
-        response = self.common_methods.create_user(self.token_admin, admin_email_tocreate, password_tocreate, 'admin')
-        assert response.status_code == 200, 'Response is errored' #Failing, seems as field sent in request are incorrect
-        #ToDO: assert response includes created user
+        email = self.common_methods.generate_random_email()
+        response = self.common_methods.create_user(self.token_admin, email, password_tocreate, 'admin')
+        assert response.status_code == 200, 'Response is errored'
+        assert response.json()['user']['email'] == email, 'Created user does not have correct email'
+        assert response.json()['user']['role'] == 'admin', 'Created user does not have correct role'
 
-    @nottest
     def test14_admin_can_create_user_user(self):
         """Test14: As an admin, I can create a user user"""
-        response = self.common_methods.create_user(self.token_admin, user_email_tocreate1, password_tocreate, 'user')
-        assert response.status_code == 200, 'Response is errored' #Failing, seems as field sent in request are incorrect
-        #ToDO: assert response includes created user
+        email = self.common_methods.generate_random_email()
+        response = self.common_methods.create_user(self.token_admin, email, password_tocreate, 'user')
+        assert response.status_code == 200, 'Response is errored'
+        assert response.json()['user']['email'] == email
+        assert response.json()['user']['role'] == 'user'
+        uid = response.json()['user']['uid']
+        assert self.common_methods.get_user(self.token_admin, uid), 'User has not been created correctly'
 
-    @nottest #working fine, Not run as it is modifying user used in several tests... in order to be able to test it,
-    # a user should be created as a precondition of this test
     def test15_admin_can_modify_user(self):
         """Test15: As an admin, I can modify a user
         ToDo: Create user in order to modify it (request not working ATM)"""
-
+        #precondition: create user to modify:
+        email = self.common_methods.generate_random_email()
+        email_modified = self.common_methods.generate_random_email()
+        user_to_modify = self.common_methods.create_user(self.token_admin, email, password_tocreate, 'user')
         params_to_update = {
-            'email': 'modified_email@gmail.com',
+            'email': email_modified,
             'pass': 'modified_pass'
         }
-        useruid = self.common_methods.get_a_random_user(self.token_admin, 'user')['uid']
+        useruid = user_to_modify.json()['user']['uid']
         response = self.common_methods.modify_user(self.token_admin, useruid, params_to_update)
         assert response.status_code == 200, 'Status code is not correct'
-        assert json.loads(response.text)['user']['email'] == 'modified_email@gmail.com', 'User not modified correctly'
+        assert json.loads(response.text)['user']['email'] == email_modified, 'User not modified correctly'
+        assert self.common_methods.get_user(self.token_admin, useruid).json()['email']  == email_modified
 
-    @nottest #working fine, Not run as it is deleting a user used in several tests... in order to be able to test it,
-    # a user should be created as a precondition of this test
     def test16_admin_can_delete_user(self):
-        """Test16: As an admin, I can delete a user"""
-        useruid = self.common_methods.get_a_random_user(self.token_admin, 'user')['uid']
+        """Test16: As an admin, I can delete a user. Failing, returns 204, but it should return a 200 there are users"""
+        #precondition: create user to delete:
+        email = self.common_methods.generate_random_email()
+        user_to_delete = self.common_methods.create_user(self.token_admin, email, password_tocreate, 'user')
+        useruid = user_to_delete.json()['user']['uid']
         response = self.common_methods.delete_user(self.token_admin, useruid)
-        users_returned = json.loads(response.text)['users']
-        assert response.status_code == 200, 'Response is errored'
-        for user in users_returned:
-            assert not user['uid'] == useruid
+        assert response.status_code == 204, 'Response is incorrect'
+        assert not self.common_methods.get_user(self.token_admin, useruid), 'User has not been deleted'
 
     def test17_user_can_not_create_user(self):
         """Test17: [negative] As a user, I can not create another user"""
         response = self.common_methods.create_user(self.token_user, user_email_tocreate2, password_tocreate, 'user')
         assert response.status_code == 401, 'Response code should have been 401 Forbidden'
 
-    #working fine, not run as it is deleting a user used in other test. in order to test it, can be done by
-    #creating a new admin user as a prerrequisite (request not working ATM) or by start and stop API server, so the data
-    # is cleared
-    @nottest
     def test18_admin_can_delete_admin(self):
-        """Test18: As an admin, I can not delete my account"""
-         #ToDo: it is deleting the first admin user it finds. it should search by an specific id
-        useruid = self.common_methods.get_a_random_user(self.token_admin, 'admin')['uid']
-        response = self.common_methods.delete_user(self.token_admin, useruid)
+        """Test18: As an admin, I can delete my account"""
+        #precondition: create admin in order to delete it
+        email = self.common_methods.generate_random_email()
+        user_to_delete = self.common_methods.create_user(self.token_admin, email, password_tocreate, 'admin')
+        useruid = user_to_delete.json()['user']['uid']
+        token_admin_new = self.common_methods.set_token(email, password_tocreate)
+        response = self.common_methods.delete_user(token_admin_new, useruid)
         assert response.status_code == 204, 'Response is not correct'
-        #ToDo: assert with  get that admin has been deleted
+        assert not self.common_methods.get_user(self.token_admin, useruid), 'User has not been deleted'
 
-     #working fine, not run as it is deleting a user used in other test. in order to test it, can be done by
-    #creating a new user as a prerrequisite (request not working ATM) or by start and stop API server, so the data
-    # is cleared
-    @nottest
-    def test19_user_can_delete_user(self):
-        """Test19: As a user, I can delete my account"""
-        #ToDo: it is deleting the first admin user found. it should search by an specific id
-        useruid = self.common_methods.get_a_random_user(self.token_admin, 'user')['uid']
-        response = self.common_methods.delete_user(self.token_admin, useruid)
-        assert response.status_code == 204, 'Response is not correct'
-        #ToDo: assert with  get that user has been deleted
-
+    def test19_user_can_not_delete_itself(self):
+        """Test19: As a user, I can NOT delete my account"""
+        """ToDo: Verify if this is working as specified"""
+        #precondition: create user in order to delete it
+        email = self.common_methods.generate_random_email()
+        user_to_delete = self.common_methods.create_user(self.token_admin, email, password_tocreate, 'user')
+        useruid = user_to_delete.json()['user']['uid']
+        token_user_new = self.common_methods.set_token(email, password_tocreate)
+        response = self.common_methods.delete_user(token_user_new, useruid)
+        assert response.status_code == 401, 'Response should be authorization error'
+        assert self.common_methods.get_user(self.token_admin, useruid), 'User has been incorrectly deleted'
 
     def test20_get_user_as_admin(self):
         """Test20: As an admin, I can get a specific user by UID"""
@@ -181,9 +184,9 @@ class TestUsers(BaseAPI):
         assert response.status_code == 200, 'Response is errored'
         assert response.json()['uid'] == useruid, 'Retrieved user is incorrect'
 
-
     def test21_get_user_as_user(self):
         """Test21: As a user, I can get a specific user by UID"""
+        """ToDo: I think I can get only myself, fix"""
         useruid = self.common_methods.get_a_random_user(self.token_user, 'user')['uid']
         response = self.common_methods.get_user(self.token_user, useruid)
         assert response.status_code == 200, 'Response is errored'
@@ -194,3 +197,31 @@ class TestUsers(BaseAPI):
         useruid = self.common_methods.get_a_random_user(self.token_admin, 'admin')['uid']
         response = self.common_methods.get_user(self.token_user, useruid)
         assert response.status_code == 403, 'User should not be able to access'
+
+    def test23_admin_can_not_get_other_admin_info(self):
+        """Test23: [negative] Verify that as an admin, I can not get information about a different admin """
+        #precondition: create user in order
+        email = self.common_methods.generate_random_email()
+        user_to_retrieve = self.common_methods.create_user(self.token_admin, email, password_tocreate, 'admin')
+        useruid = user_to_retrieve.json()['user']['uid']
+        response = self.common_methods.get_user(self.token_admin, useruid)
+        assert response.status_code == 403, 'Response should be cannot access that resource 403'
+
+    def test24_user_can_not_get_other_user_info(self):
+        """Test24: [negative] Verify that as a user, I can not get information about a different user"""
+        email = self.common_methods.generate_random_email()
+        user_to_retrieve = self.common_methods.create_user(self.token_admin, email, password_tocreate, 'user')
+        useruid = user_to_retrieve.json()['user']['uid']
+        response = self.common_methods.get_user(self.token_user, useruid)
+        assert response.status_code == 403, 'Response should be cannot access that resource 403'
+
+    def test25_not_logged_user_can_not_get_user_info(self):
+        """ Test25: [negative] Verify that as a non logged user I can not get user info"""
+        email = self.common_methods.generate_random_email()
+        user_to_retrieve = self.common_methods.create_user(self.token_admin, email, password_tocreate, 'user')
+        useruid = user_to_retrieve.json()['user']['uid']
+        response = self.common_methods.get_user(self.wrong_token, useruid)
+        assert response.status_code == 401, 'Response should be unauthorized'
+
+#class TestChargers(BaseAPI):
+

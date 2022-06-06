@@ -1,7 +1,9 @@
 __author__ = 'rosaroman'
 
 import json
+import random
 import requests
+import string
 
 #Define some variables
 
@@ -76,13 +78,19 @@ class CommonMethods:
 
     def create_user(self, auth_token, email, password, role):
         return requests.post(self.set_url(api_name_users), headers = auth_token,
-                            json = {'email':email, 'password':password, role:'role'})
+                            json = {'email':email, 'password':password, 'role':role, 'emailConfirmation':email,
+                                    'passwordConfirmation':password})
 
     def modify_user(self, auth_token, useruid, params_to_update):
         return requests.put(self.set_url_id(api_name_users, useruid), headers = auth_token,
                             json= params_to_update)
 
     def delete_user(self, auth_token, useruid):
+        url = self.set_url_id(api_name_users, useruid)
         return requests.delete(self.set_url_id(api_name_users, useruid), headers = auth_token)
+
+    def generate_random_email(self):
+        mail = ''.join(random.choice(string.ascii_lowercase) for _ in range(12))
+        return 'mail_' + mail + '@mail.com'
 
 

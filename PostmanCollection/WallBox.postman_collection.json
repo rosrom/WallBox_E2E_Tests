@@ -1,0 +1,2878 @@
+{
+	"info": {
+		"_postman_id": "85aafb8f-a06e-45be-8d0c-b81da6e4bdd1",
+		"name": "WallBox",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1312685"
+	},
+	"item": [
+		{
+			"name": "/signin",
+			"item": [
+				{
+					"name": "SignInAsAdmin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"})",
+									"",
+									"pm.test(\"Response includes expected fields\", function () {",
+									"    pm.response.to.have.jsonBody(\"uid\");",
+									"    pm.response.to.have.jsonBody(\"email\");",
+									"    pm.response.to.have.jsonBody(\"jwt\")",
+									"})",
+									"",
+									"pm.test(\"Login is for expected user\", function(){",
+									"    pm.expect(pm.response.json().email).to.equal(pm.collectionVariables.get(\"admin\"))",
+									"})",
+									"// to delete: ",
+									"pm.collectionVariables.set('bearer_token', pm.response.json().jwt)",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{admin}}\",\n  \"password\": \"{{admin_pass}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/signin",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign in as User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"})",
+									"",
+									"pm.test(\"Response includes expected fields\", function () {",
+									"    pm.response.to.have.jsonBody(\"uid\");",
+									"    pm.response.to.have.jsonBody(\"email\");",
+									"    pm.response.to.have.jsonBody(\"jwt\")",
+									"})",
+									"",
+									"pm.test(\"Login is for expected user\", function(){",
+									"    pm.expect(pm.response.json().email).to.equal(pm.collectionVariables.get(\"user\"))",
+									"})",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user}}\",\n  \"password\": \"{{user_pass}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/signin",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[negative] Sign in with incorrect user/pass combination",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(401);",
+									"})",
+									"",
+									"pm.test(\"Response is errored\", function () {",
+									"    pm.expect(pm.response.json().message).to.equal(pm.collectionVariables.get(\"anauthorized_login_error\"))",
+									"})",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user}}\",\n  \"password\": \"{{admin_pass}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/signin",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[negative] Sign in Incorrect Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(400);",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"\",\n  \"password\": \"{{user_pass}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/signin",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/chargers",
+			"item": [
+				{
+					"name": "get Chargers as User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"})",
+									"",
+									"pm.test(\"Response includes expected field\", function () {",
+									"    pm.response.to.have.jsonBody(\"chargers\");",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/chargers/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"chargers",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get Chargers as Admin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"})",
+									"",
+									"pm.test(\"Response includes expected field\", function () {",
+									"    pm.response.to.have.jsonBody(\"chargers\");",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/chargers/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"chargers",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[negative] get Chargers with no permissions",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(401);",
+									"})",
+									"",
+									"pm.test(\"Response is errored\", function () {",
+									"    pm.expect(pm.response.json().message).to.equal('Could not verify token')",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "wrong_Token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/chargers/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"chargers",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[To fix] Create Charger",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"",
+									"pm.test(\"Fields are created as expected\", function() {",
+									"    pm.expect(pm.response.json().model).to.equal(pm.collectionVariables.get(\"model\"));",
+									"    pm.expect(pm.response.json().serialNumber).to.equal(pm.collectionVariables.get(\"serialNumber\"));",
+									"    pm.response.to.have.jsonBody(\"chargeruid\");",
+									"",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"serialNumber\": \"{{serialNumber}}\",\n  \"model\": \"{{model}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/chargers/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"chargers",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[To fix] Modify Charger",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//add script to create charger in order to modify, To fix, not sure what response is like",
+									"var URL_char = pm.collectionVariables.get('URL') + \"/chargers/\"",
+									"var request_data_char = {",
+									"    \"serialNumber\": pm.collectionVariables.get('serialNumberToModify'),",
+									"    \"model\": pm.collectionVariables.get('model')",
+									"}",
+									"const optionsChar = {",
+									"    url: URL_char,",
+									"    method: 'POST',",
+									"    header: { 'content-type': 'application/json' },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(request_data_char)",
+									"",
+									"    }",
+									"};",
+									"pm.sendRequest(optionsChar, function (errChar, resChar) {",
+									"    var jsonData = resChar.json();",
+									"    if (errChar) {",
+									"        console.log(errChar);",
+									"    }",
+									"    else {",
+									"        pm.collectionVariables.set(\"uidchargerToModify\", jsonData.uidcharger);",
+									"    }",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"})",
+									"",
+									"pm.test(\"Fields are modified\", function(){",
+									"    pm.expect(pm.response.json().model).to.equal(\"modified charger\")",
+									"    pm.expect(pm.response.json().serialNumber).to.equal(\"9\")",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"serialNumber\": \"9\",\n  \"model\": \"modified charger\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/chargers/{{uidchargerToModify}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"chargers",
+								"{{uidchargerToModify}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[To fix] Delete Charger",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//add script to create charger in order to modify, To fix, not sure what response is like",
+									"var URL_char = pm.collectionVariables.get('URL') + \"/chargers/\"",
+									"var request_data_char = {",
+									"    \"serialNumber\": pm.collectionVariables.get('serialNumberToModify'),",
+									"    \"model\": pm.collectionVariables.get('model')",
+									"}",
+									"const optionsChar = {",
+									"    url: URL_char,",
+									"    method: 'POST',",
+									"    header: { 'content-type': 'application/json' },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(request_data_char)",
+									"",
+									"    }",
+									"};",
+									"pm.sendRequest(optionsChar, function (errChar, resChar) {",
+									"    var jsonData = resChar.json();",
+									"    if (errChar) {",
+									"        console.log(errChar);",
+									"    }",
+									"    else {",
+									"        pm.collectionVariables.set(\"uidchargerToDelete\", jsonData.uidcharger);",
+									"    }",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"})",
+									"",
+									"//Check if item has been removed. Not sure what the answer should be",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/chargers/{{uidchargerToDelete}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"chargers",
+								"{{uidchargerToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[To fix] Get Charger as Admin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//add script to create charger in order to get it later, To fix, not sure what response is like",
+									"var URL_char = pm.collectionVariables.get('URL') + \"/chargers/\"",
+									"var request_data_char = {",
+									"    \"serialNumber\": pm.collectionVariables.get('serialNumberToGet'),",
+									"    \"model\": pm.collectionVariables.get('model')",
+									"}",
+									"const optionsChar = {",
+									"    url: URL_char,",
+									"    method: 'POST',",
+									"    header: { 'content-type': 'application/json' },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(request_data_char)",
+									"",
+									"    }",
+									"};",
+									"pm.sendRequest(optionsChar, function (errChar, resChar) {",
+									"    var jsonData = resChar.json();",
+									"    if (errChar) {",
+									"        console.log(errChar);",
+									"    }",
+									"    else {",
+									"        pm.collectionVariables.set(\"uidchargerToGet\", jsonData.uidcharger);",
+									"    }",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"})",
+									"",
+									"pm.test(\"Charger in response is the same as requested\", function () {",
+									"    pm.expect(pm.response.json().uidcharger).to.equal(pm.collectionVariables.get(\"uidchargerToGet\"));",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/chargers/{{uidchargerToGet}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"chargers",
+								"{{uidchargerToGet}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[negative] Try to get charger with user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//add script to create charger in order to get it later, To fix, not sure what response is like",
+									"var URL_char = pm.collectionVariables.get('URL') + \"/chargers/\"",
+									"var request_data_char = {",
+									"    \"serialNumber\": pm.collectionVariables.get('serialNumberToGet'),",
+									"    \"model\": pm.collectionVariables.get('model')",
+									"}",
+									"const optionsChar = {",
+									"    url: URL_char,",
+									"    method: 'POST',",
+									"    header: { 'content-type': 'application/json' },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(request_data_char)",
+									"",
+									"    }",
+									"};",
+									"pm.sendRequest(optionsChar, function (errChar, resChar) {",
+									"    var jsonData = resChar.json();",
+									"    if (errChar) {",
+									"        console.log(errChar);",
+									"    }",
+									"    else {",
+									"        pm.collectionVariables.set(\"uidchargerToGet\", jsonData.uidcharger);",
+									"    }",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(401);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/chargers/123123",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"chargers",
+								"123123"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[negative] Try to get a non-existing charger",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//add script to create charger in order to get it later, To fix, not sure what response is like",
+									"var URL_char = pm.collectionVariables.get('URL') + \"/chargers/\"",
+									"var request_data_char = {",
+									"    \"serialNumber\": pm.collectionVariables.get('serialNumberToGet'),",
+									"    \"model\": pm.collectionVariables.get('model')",
+									"}",
+									"const optionsChar = {",
+									"    url: URL_char,",
+									"    method: 'POST',",
+									"    header: { 'content-type': 'application/json' },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(request_data_char)",
+									"",
+									"    }",
+									"};",
+									"pm.sendRequest(optionsChar, function (errChar, resChar) {",
+									"    var jsonData = resChar.json();",
+									"    if (errChar) {",
+									"        console.log(errChar);",
+									"    }",
+									"    else {",
+									"        pm.collectionVariables.set(\"uidchargerToGet\", jsonData.uidcharger);",
+									"    }",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(400);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/chargers/123123",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"chargers",
+								"123123"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"function createToken(username, password)",
+							"{",
+							"    var URL = pm.collectionVariables.get('URL') + \"/signin\"",
+							"    var request_data = {",
+							"        \"email\": username,",
+							"        \"password\": password",
+							"    }",
+							"    ",
+							"",
+							"    const options = {",
+							"        url: URL,",
+							"        method: 'POST',",
+							"        header: { 'content-type': 'application/json' },",
+							"        body: {",
+							"            mode: 'raw',",
+							"            raw: JSON.stringify(request_data)",
+							"",
+							"        }",
+							"    };",
+							"",
+							"   response = pm.sendRequest(options, function (err, res) { ",
+							"    var jsonData = res.json();",
+							"    if (err) {",
+							"        console.log(err);",
+							"    }",
+							"    else {",
+							"        if (username.includes('admin')) {",
+							"            pm.collectionVariables.set(\"bearer_token_admin\", jsonData.jwt);",
+							"        }",
+							"        else {",
+							"            pm.collectionVariables.set(\"bearer_token_user\", jsonData.jwt)",
+							"        }",
+							"        ",
+							"        }",
+							"    });",
+							"};",
+							"",
+							"createToken(pm.collectionVariables.get('admin'), pm.collectionVariables.get('admin_pass'));",
+							"",
+							"createToken(pm.collectionVariables.get('user'), pm.collectionVariables.get('user_pass'));",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "/users",
+			"item": [
+				{
+					"name": "Get users as Admin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"})",
+									"",
+									"pm.test(\"Response includes expected field\", function () {",
+									"    pm.response.to.have.jsonBody(\"users\");",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/users/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get users as User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"});",
+									"",
+									"pm.test(\"Response includes expected field\", function () {",
+									"    pm.response.to.have.jsonBody(\"users\");",
+									"});",
+									"",
+									"pm.test(\"Response includes asking user, with user = role\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    for (var i = 0; i < jsonData.users.length; i++) {",
+									"        pm.expect(jsonData.users[i].role).to.eql(\"user\");",
+									"        pm.expect(jsonData.users[i].email).to.eql(pm.collectionVariables.get(\"user\"))",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/users/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[negative] Try to get users with no permissions",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "'wrong_token'",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/users/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create user as admin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"});",
+									"user_uid = pm.response.json().user.uid;",
+									"var URL = pm.collectionVariables.get('URL') + \"/users/\" + user_uid;",
+									"const options = {",
+									"    url: URL,",
+									"    method: 'GET',",
+									"    header: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + pm.collectionVariables.get('bearer_token')},",
+									"    body: {",
+									"        mode: 'raw'",
+									"    }",
+									"};",
+									"pm.sendRequest(options, function (err, res) {",
+									"    var jsonData = res.json();",
+									"    if (err) {",
+									"        console.log(err);",
+									"        false;",
+									"    }",
+									"    else {",
+									"        var created_user = res.json()",
+									"        pm.test(\"User has been created and stored correctly)\", function() {",
+									"            pm.expect(created_user.email).equals(pm.collectionVariables.get('randomEmail').toLowerCase())",
+									"            pm.expect(created_user.role).equals('user')",
+									"    });",
+									"        ",
+									"    }",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{randomEmail}}\",\n  \"password\": \"{{passToCreate}}\",\n  \"emailConfirmation\": \"{{randomEmail}}\",\n  \"passwordConfirmation\": \"{{passToCreate}}\",\n  \"role\": \"user\"\n}\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/users/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[negative] User can not create users",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{randomEmail}}\",\n  \"password\": \"{{passToCreate}}\",\n  \"emailConfirmation\": \"{{randomEmail}}\",\n  \"passwordConfirmation\": \"{{passToCreate}}\",\n  \"role\": \"user\"\n}\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/users/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[negative] Try to create user admin with user auth",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Response is errored\", function () {",
+									"    pm.expect(pm.response.json().message).to.equal(\"Insufficient permissions\")",
+									"",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"mail2@mail.com\",\n  \"password\": \"{{passToCreate}}\",\n  \"role\": \"admin\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/users/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify user as admin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//create user in order to modify it in the test:",
+									"var URL_user = pm.collectionVariables.get('URL') + \"/users/\"",
+									"var request_data_user = {",
+									"    \"email\": pm.collectionVariables.get('randomEmail'),",
+									"    \"password\": pm.collectionVariables.get('passToCreate'),",
+									"    \"emailConfirmation\": pm.collectionVariables.get('randomEmail'),",
+									"    \"passwordConfirmation\": pm.collectionVariables.get('passToCreate'),",
+									"    \"role\": \"user\"",
+									"}",
+									"const optionsUser = {",
+									"    url: URL_user,",
+									"    method: 'POST',",
+									"    header: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + pm.collectionVariables.get('bearer_token_admin')},",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(request_data_user)",
+									"",
+									"    }",
+									"};",
+									"pm.sendRequest(optionsUser, function (errUser, resUser) {",
+									"    var jsonData = resUser.json();",
+									"    console.log(jsonData)",
+									"    if (errUser) {",
+									"        console.log(errUser);",
+									"    }",
+									"    else {",
+									"        console.log(jsonData.user.uid)",
+									"        pm.collectionVariables.set(\"uidUserToModify\", jsonData.user.uid);",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"});",
+									"",
+									"console.log(pm.response.json().user.email);",
+									"pm.test(\"Fields are modified\", function(){",
+									"    pm.expect(pm.response.json().user.email).to.equal(pm.collectionVariables.get(\"randomEmailMod\"));",
+									"    pm.expect(pm.response.json().user.role).to.equal('user');",
+									"});",
+									"",
+									"//add test to check if user has been modified",
+									"",
+									"pm.test(\"New user has been modified correctly\", function(){",
+									"    var URL = pm.collectionVariables.get('URL') + \"/users/\" + pm.collectionVariables.get(\"uidUserToModify\")",
+									"    const options = {",
+									"        url: URL,",
+									"        method: 'GET',",
+									"        header: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + pm.collectionVariables.get('bearer_token') },",
+									"        body: {",
+									"            mode: 'raw'",
+									"        }",
+									"    };",
+									"    pm.sendRequest(options, function (err, res) {",
+									"        var jsonData = res.json();",
+									"        if (err) {",
+									"            console.log(err);",
+									"        }",
+									"        else if (jsonData.status == 404){",
+									"            console.log(\"Not found 404\")",
+									"        }",
+									"        else {",
+									"            pm.expect(jsonData.email).to.eql(pm.collectionVariables.get(\"randomEmailMod\"));",
+									"            pm.expect(jsonData.role).to.eql(\"user\");",
+									"            ",
+									"        }",
+									"    })",
+									"});    ",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{randomEmailMod}}\",\n  \"password\": \"{{passModified}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/users/{{uidUserToModify}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"{{uidUserToModify}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user as admin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//create user in order to delete it in the test:",
+									"var URL_user = pm.collectionVariables.get('URL') + \"/users/\"",
+									"var request_data_user = {",
+									"    \"email\": pm.collectionVariables.get('randomEmail'),",
+									"    \"password\": pm.collectionVariables.get('passToCreate'),",
+									"    \"emailConfirmation\": pm.collectionVariables.get('randomEmail'),",
+									"    \"passwordConfirmation\": pm.collectionVariables.get('passToCreate'),",
+									"    \"role\": \"user\"",
+									"}",
+									"const optionsUser = {",
+									"    url: URL_user,",
+									"    method: 'POST',",
+									"    header: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + pm.collectionVariables.get('bearer_token_admin')},",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(request_data_user)",
+									"",
+									"    }",
+									"};",
+									"pm.sendRequest(optionsUser, function (errUser, resUser) {",
+									"    var jsonData = resUser.json();",
+									"    console.log(jsonData)",
+									"    if (errUser) {",
+									"        console.log(errUser);",
+									"    }",
+									"    else {",
+									"        console.log(jsonData.user.uid)",
+									"        pm.collectionVariables.set(\"uidUserToDelete\", jsonData.user.uid);",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"});",
+									"",
+									"//add test to check if user has been deleted",
+									"",
+									"pm.test(\"User has been deleted\", function(){",
+									"    var URL = pm.collectionVariables.get('URL') + \"/users/\"",
+									"    const options = {",
+									"        url: URL,",
+									"        method: 'GET',",
+									"        header: { 'content-type': 'application/json' },",
+									"        body: {",
+									"            mode: 'raw'",
+									"        }",
+									"    };",
+									"    pm.sendRequest(options, function (err, res) {",
+									"        var jsonData = res.json();",
+									"        if (err) {",
+									"            console.log(err);",
+									"            false;",
+									"        }",
+									"        else if (jsonData.status == 404 || jsonData.status == 401){",
+									"            console.log(jsonData.status + \" \" + jsonData.message);",
+									"            false;",
+									"        }",
+									"",
+									"        else {",
+									"            //adding a for, not sure if this will return one user or more?",
+									"            for (var i = 0; i < jsonData.users.length; i++) {",
+									"                pm.expect(jsonData.users[i].uid).to.not.equal(pm.collectionVariables.get(\"uidUserToDelete\"))",
+									"            }",
+									"",
+									"        }",
+									"    })",
+									"});    ",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/users/{{uidUserToDelete}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"{{uidUserToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[negative] Try to delete user as user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//create user in order to delete it in the test:",
+									"var URL_user = pm.collectionVariables.get('URL') + \"/users/\"",
+									"var request_data_user = {",
+									"    \"email\": pm.collectionVariables.get('randomEmail'),",
+									"    \"password\": pm.collectionVariables.get('passToCreate'),",
+									"    \"emailConfirmation\": pm.collectionVariables.get('randomEmail'),",
+									"    \"passwordConfirmation\": pm.collectionVariables.get('passToCreate'),",
+									"    \"role\": \"user\"",
+									"}",
+									"const optionsUser = {",
+									"    url: URL_user,",
+									"    method: 'POST',",
+									"    header: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + pm.collectionVariables.get('bearer_token_admin')},",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(request_data_user)",
+									"",
+									"    }",
+									"};",
+									"pm.sendRequest(optionsUser, function (errUser, resUser) {",
+									"    var jsonData = resUser.json();",
+									"    console.log(jsonData)",
+									"    if (errUser) {",
+									"        console.log(errUser);",
+									"    }",
+									"    else {",
+									"        console.log(jsonData.user.uid)",
+									"        pm.collectionVariables.set(\"uidUserToDelete\", jsonData.user.uid);",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/users/{{uidUserToDelete}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"{{uidUserToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Admin as Admin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//get uid for admin user to use in the test",
+									"var URL_user = pm.collectionVariables.get('URL') + \"/users/\"",
+									"",
+									"const optionsUser = {",
+									"    url: URL_user,",
+									"    method: 'GET',",
+									"    header: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + pm.collectionVariables.get('bearer_token_admin')},",
+									"    body: {",
+									"        mode: 'raw'",
+									"",
+									"    }",
+									"};",
+									"pm.sendRequest(optionsUser, function (errUser, resUser) {",
+									"    var jsonData = resUser.json();",
+									"    if (errUser) {",
+									"        console.log(errUser);",
+									"    }",
+									"    else {",
+									"        for (user in jsonData.users) {",
+									"            if (jsonData.users[user].email == pm.collectionVariables.get('admin')) {",
+									"                pm.collectionVariables.set(\"uidAdmin\", jsonData.users[user].uid);",
+									"            }",
+									"        }",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"});",
+									"",
+									"pm.test(\"Response includes correct admin info\", function () {",
+									"    pm.expect(pm.response.json().uid).to.equal(pm.collectionVariables.get(\"uidAdmin\"));",
+									"    pm.expect(pm.response.json().email).to.equal(pm.collectionVariables.get(\"admin\"));",
+									"    pm.expect(pm.response.json().role).to.equal(\"admin\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/users/{{uidAdmin}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"{{uidAdmin}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user as User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//get uid for user to use in the test",
+									"var URL_user = pm.collectionVariables.get('URL') + \"/users/\"",
+									"",
+									"const optionsUser = {",
+									"    url: URL_user,",
+									"    method: 'GET',",
+									"    header: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + pm.collectionVariables.get('bearer_token_admin')},",
+									"    body: {",
+									"        mode: 'raw'",
+									"",
+									"    }",
+									"};",
+									"pm.sendRequest(optionsUser, function (errUser, resUser) {",
+									"    var jsonData = resUser.json();",
+									"    if (errUser) {",
+									"        console.log(errUser);",
+									"    }",
+									"    else {",
+									"        for (user in jsonData.users) {",
+									"            if (jsonData.users[user].email == pm.collectionVariables.get('user')) {",
+									"                pm.collectionVariables.set(\"uidUser\", jsonData.users[user].uid);",
+									"            }",
+									"        }",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response includes correct user info\", function () {",
+									"    pm.expect(pm.response.json().uid).to.equal(pm.collectionVariables.get(\"uidUser\"));",
+									"    pm.expect(pm.response.json().email).to.equal(pm.collectionVariables.get(\"user\"));",
+									"    pm.expect(pm.response.json().role).to.equal(\"user\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/users/{{uidUser}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"{{uidUser}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user as Admin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//get uid for random user to use in the test",
+									"var URL_user = pm.collectionVariables.get('URL') + \"/users/\"",
+									"",
+									"const optionsUser = {",
+									"    url: URL_user,",
+									"    method: 'GET',",
+									"    header: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + pm.collectionVariables.get('bearer_token_admin')},",
+									"    body: {",
+									"        mode: 'raw'",
+									"",
+									"    }",
+									"};",
+									"pm.sendRequest(optionsUser, function (errUser, resUser) {",
+									"    var jsonData = resUser.json();",
+									"    if (errUser) {",
+									"        console.log(errUser);",
+									"    }",
+									"    else {",
+									"        for (user in jsonData.users) {",
+									"            if ((jsonData.users[user].role == 'user') && (jsonData.users[user].email != pm.collectionVariables.get('user'))) {",
+									"                pm.collectionVariables.set(\"uidUserEx\", jsonData.users[user].uid);",
+									"                pm.collectionVariables.set(\"userEx\", jsonData.users[user].email);",
+									"                break;",
+									"            }",
+									"        }",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response includes correct user info\", function () {",
+									"    pm.expect(pm.response.json().uid).to.equal(pm.collectionVariables.get(\"uidUserEx\"));",
+									"    pm.expect(pm.response.json().email).to.equal(pm.collectionVariables.get(\"userEx\"));",
+									"    pm.expect(pm.response.json().role).to.equal(\"user\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/users/{{uidUserEx}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"{{uidUserEx}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[negative] Try to get user admin as user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//get uid for admin user to use in the test",
+									"var URL_user = pm.collectionVariables.get('URL') + \"/users/\"",
+									"",
+									"const optionsUser = {",
+									"    url: URL_user,",
+									"    method: 'GET',",
+									"    header: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + pm.collectionVariables.get('bearer_token_admin')},",
+									"    body: {",
+									"        mode: 'raw'",
+									"",
+									"    }",
+									"};",
+									"pm.sendRequest(optionsUser, function (errUser, resUser) {",
+									"    var jsonData = resUser.json();",
+									"    if (errUser) {",
+									"        console.log(errUser);",
+									"    }",
+									"    else {",
+									"        for (user in jsonData.users) {",
+									"            if (jsonData.users[user].email == pm.collectionVariables.get('admin')) {",
+									"                pm.collectionVariables.set(\"uidAdmin\", jsonData.users[user].uid);",
+									"            }",
+									"        }",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									"",
+									"pm.test(\"Response includes correct user info\", function () {",
+									"    pm.expect(pm.response.json().message).to.equal(\"Cannot access that resource\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/users/{{uidAdmin}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"{{uidAdmin}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[negative] Try to get user with incorrect uid",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Response includes correct user info\", function () {",
+									"    pm.expect(pm.response.json().message).to.equal(\"Could not verify token\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_admin}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/users/123123123incorrect",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"123123123incorrect"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"function createRandomEmail(domain, length)",
+							"{",
+							"    var text = \"\";",
+							"    var possible = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\";",
+							"",
+							"    for( var i=0; i < length; i++ )",
+							"        text += possible.charAt(Math.floor(Math.random() * possible.length));",
+							"",
+							"    return text + domain;",
+							"}",
+							"",
+							"var email = createRandomEmail(\"@testmail.com\",12).toLowerCase();",
+							"var email_mod = createRandomEmail(\"@testmail.com\",12).toLowerCase();",
+							"pm.collectionVariables.set(\"randomEmail\", email);",
+							"pm.collectionVariables.set(\"randomEmailMod\", email_mod);",
+							"",
+							"",
+							"function createToken(username, password)",
+							"{",
+							"    var URL = pm.collectionVariables.get('URL') + \"/signin\"",
+							"    var request_data = {",
+							"        \"email\": username,",
+							"        \"password\": password",
+							"    }",
+							"    ",
+							"",
+							"    const options = {",
+							"        url: URL,",
+							"        method: 'POST',",
+							"        header: { 'content-type': 'application/json' },",
+							"        body: {",
+							"            mode: 'raw',",
+							"            raw: JSON.stringify(request_data)",
+							"",
+							"        }",
+							"    };",
+							"",
+							"   response = pm.sendRequest(options, function (err, res) { ",
+							"    var jsonData = res.json();",
+							"    if (err) {",
+							"        console.log(err);",
+							"    }",
+							"    else {",
+							"        if (username.includes('admin')) {",
+							"            pm.collectionVariables.set(\"bearer_token_admin\", jsonData.jwt);",
+							"        }",
+							"        else {",
+							"            pm.collectionVariables.set(\"bearer_token_user\", jsonData.jwt)",
+							"        }",
+							"        ",
+							"        }",
+							"    });",
+							"};",
+							"",
+							"createToken(pm.collectionVariables.get('admin'), pm.collectionVariables.get('admin_pass'));",
+							"",
+							"createToken(pm.collectionVariables.get('user'), pm.collectionVariables.get('user_pass'));",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "/chargers&users",
+			"item": [
+				{
+					"name": "[To fix] Link Charger With User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Create charger and store ID",
+									"var URLCharger = pm.collectionVariables.get('URL') + \"/chargers\";",
+									"var request_data_charger= {",
+									"    \"serialNumber\": \"112211\",",
+									"    \"model\": \"Copper\"",
+									"};",
+									"const optionsCharger = {",
+									"    url: URLCharger,",
+									"    method: 'POST',",
+									"    header: { 'content-type': 'application/json' },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(request_data_charger)",
+									"",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest(optionsCharger, function (err, res) {",
+									"    var jsonDataCharger = res.json();",
+									"    if (err) {",
+									"        console.log(err);",
+									"    }",
+									"    else {",
+									"        pm.collectionVariables.set(\"uidCharger1\", jsonDataCharger.uidcharger);",
+									"    }",
+									"});",
+									"// Create user and store ID",
+									"var URL_user = pm.collectionVariables.get('URL') + \"/users/\"",
+									"var request_data_user = {",
+									"    \"email\": pm.collectionVariables.get('userMailToDelete'),",
+									"    \"password\": pm.collectionVariables.get('passToCreate'),",
+									"    \"role\": \"user\"",
+									"}",
+									"const optionsUser = {",
+									"    url: URL_user,",
+									"    method: 'POST',",
+									"    header: { 'content-type': 'application/json' },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(request_data_user)",
+									"",
+									"    }",
+									"};",
+									"pm.sendRequest(optionsUser, function (errUser, resUser) {",
+									"    var jsonDataUser = resUser.json();",
+									"    if (errUser) {",
+									"        console.log(errUser);",
+									"    }",
+									"    else {",
+									"        pm.collectionVariables.set(\"uidUser1\", jsonDataUser.uiduser);",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"})",
+									"",
+									"",
+									"//Add test to verify that user is linked with charger. Does any request show that info? "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/chargers/{{uidCharger1}}/user/{{uidUser1}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"chargers",
+								"{{uidCharger1}}",
+								"user",
+								"{{uidUser1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[To fix] Unlink Charger With User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//Login as admin",
+									"var URL = pm.collectionVariables.get('URL') + \"/signin\"",
+									"var request_data = {",
+									"    \"email\": pm.collectionVariables.get('admin'),",
+									"    \"password\": pm.collectionVariables.get('admin_pass')",
+									"}",
+									"",
+									"const options = {",
+									"    url: URL,",
+									"    method: 'POST',",
+									"    header: { 'content-type': 'application/json' },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(request_data)",
+									"",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest(options, function (err, res) {",
+									"    var jsonData = res.json();",
+									"    if (err) {",
+									"        console.log(err);",
+									"    }",
+									"    else {",
+									"        pm.collectionVariables.set(\"bearer_token\", jsonData.jwt);",
+									"    }",
+									"});",
+									"",
+									"// Create charger and store ID",
+									"var URLCharger = pm.collectionVariables.get('URL') + \"/chargers\";",
+									"var request_data_charger= {",
+									"    \"serialNumber\": \"112211\",",
+									"    \"model\": \"Copper\"",
+									"};",
+									"const optionsCharger = {",
+									"    url: URLCharger,",
+									"    method: 'POST',",
+									"    header: { 'content-type': 'application/json' },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(request_data_charger)",
+									"",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest(optionsCharger, function (err, res) {",
+									"    var jsonDataCharger = res.json();",
+									"    if (err) {",
+									"        console.log(err);",
+									"    }",
+									"    else {",
+									"        pm.collectionVariables.set(\"uidCharger2\", jsonDataCharger.uidcharger);",
+									"    }",
+									"});",
+									"// Create user and store ID",
+									"var URL_user = pm.collectionVariables.get('URL') + \"/users/\"",
+									"var request_data_user = {",
+									"    \"email\": pm.collectionVariables.get('userMailToDelete'),",
+									"    \"password\": pm.collectionVariables.get('passToCreate'),",
+									"    \"role\": \"user\"",
+									"}",
+									"const optionsUser = {",
+									"    url: URL_user,",
+									"    method: 'POST',",
+									"    header: { 'content-type': 'application/json' },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(request_data_user)",
+									"",
+									"    }",
+									"};",
+									"pm.sendRequest(optionsUser, function (errUser, resUser) {",
+									"    var jsonDataUser = resUser.json();",
+									"    if (errUser) {",
+									"        console.log(errUser);",
+									"    }",
+									"    else {",
+									"        pm.collectionVariables.set(\"uidUser2\", jsonDataUser.uiduser);",
+									"    }",
+									"});",
+									"",
+									"//Link user and charger, in order to unlink it in request",
+									"var URL_link = pm.collectionVariables.get('URL') + \"/chargers/\" + pm.collectionVariables.get(\"uidCharger2\") +\"/users/\" + pm.collectionVariables.get(\"uidUser2\")",
+									"const optionsLink = {",
+									"    url: URL_link,",
+									"    method: 'POST',",
+									"    header: { 'content-type': 'application/json' },",
+									"    body: {",
+									"        mode: 'raw'",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest(optionsLink, function (errLink, resLink) {",
+									"    var jsonDataLink = resLink.json();",
+									"    console.log(jsonDataLink);",
+									"    if (errLink) {",
+									"        console.log(errLink);",
+									"    }",
+									"    else {",
+									"        console.log(\"User and charger linked\");",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"})",
+									"",
+									"//add test to check that unlink was successful "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/chargers/{{uidCharger2}}/user/{{uidUser2}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"chargers",
+								"{{uidCharger2}}",
+								"user",
+								"{{uidUser2}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[To fix] [negative] Try to link charger with user as an user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//get uid for user to use in the test",
+									"var URL_user = pm.collectionVariables.get('URL') + \"/users/\"",
+									"",
+									"const optionsUser = {",
+									"    url: URL_user,",
+									"    method: 'GET',",
+									"    header: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + pm.collectionVariables.get('bearer_token_user')},",
+									"    body: {",
+									"        mode: 'raw'",
+									"",
+									"    }",
+									"};",
+									"pm.sendRequest(optionsUser, function (errUser, resUser) {",
+									"    var jsonData = resUser.json();",
+									"    if (errUser) {",
+									"        console.log(errUser);",
+									"    }",
+									"    else {",
+									"        for (user in jsonData.users) {",
+									"            if (jsonData.users[user].email == pm.collectionVariables.get('user')) {",
+									"                pm.collectionVariables.set(\"uidUser\", jsonData.users[user].uid);",
+									"            }",
+									"        }",
+									"    }",
+									"});",
+									"",
+									"",
+									"// Create charger and store ID",
+									"var URLCharger = pm.collectionVariables.get('URL') + \"/chargers\";",
+									"var request_data_charger= {",
+									"    \"serialNumber\": \"112211\",",
+									"    \"model\": \"Copper\"",
+									"};",
+									"const optionsCharger = {",
+									"    url: URLCharger,",
+									"    method: 'POST',",
+									"    header: { 'content-type': 'application/json' },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(request_data_charger)",
+									"",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest(optionsCharger, function (err, res) {",
+									"    var jsonDataCharger = res.json();",
+									"    if (err) {",
+									"        console.log(err);",
+									"    }",
+									"    else {",
+									"        pm.collectionVariables.set(\"uidCharger1\", jsonDataCharger.uidcharger);",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Response is not errored\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"})",
+									"",
+									"",
+									"//Add test to verify that user is linked with charger. Does any request show that info? "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token_user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/chargers/{{uidCharger1}}/user/{{uidUser1}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"chargers",
+								"{{uidCharger1}}",
+								"user",
+								"{{uidUser1}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health Check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(200);",
+							"})",
+							"",
+							"pm.test(\"Response is not errored\", function () {",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.not.have.jsonBody(\"error\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}",
+					"host": [
+						"{{URL}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "admin",
+			"value": "admin@wallbox.com",
+			"type": "string"
+		},
+		{
+			"key": "admin_pass",
+			"value": "admin1234",
+			"type": "string"
+		},
+		{
+			"key": "user",
+			"value": "user@wallbox.com",
+			"type": "string"
+		},
+		{
+			"key": "user_pass",
+			"value": "user1234",
+			"type": "string"
+		},
+		{
+			"key": "URL",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "anauthorized_login_error",
+			"value": "Wrong email or password",
+			"type": "string"
+		},
+		{
+			"key": "bearer_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIwMUc0SjBEVlRONENKRDFNSjQ5VFY5Rjk5WCIsImVtYWlsIjoiYWRtaW5Ad2FsbGJveC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTQyODA1MjYsImV4cCI6MTY1NDI4NDEyNn0.4dS5Z_czQFqIYdXm_0d5uGNHsA_ceDArXOIUc_9ifnk",
+			"type": "string"
+		},
+		{
+			"key": "URL_signin",
+			"value": "http://localhost:3000/signin",
+			"type": "string"
+		},
+		{
+			"key": "uidcharger",
+			"value": "1212",
+			"type": "string"
+		},
+		{
+			"key": "serialNumber",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "model",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "serialNumberToModify",
+			"value": "2",
+			"type": "string"
+		},
+		{
+			"key": "serialNumberModified",
+			"value": "3",
+			"type": "string"
+		},
+		{
+			"key": "uidchargerToModify",
+			"value": "1212",
+			"type": "string"
+		},
+		{
+			"key": "serialNumberToDelete",
+			"value": "4",
+			"type": "string"
+		},
+		{
+			"key": "uidchargerToDelete",
+			"value": "5252",
+			"type": "string"
+		},
+		{
+			"key": "serialNumberToGet",
+			"value": "5",
+			"type": "string"
+		},
+		{
+			"key": "uidchargerToGet",
+			"value": "3232",
+			"type": "string"
+		},
+		{
+			"key": "userToCreate",
+			"value": "mail@mail.com",
+			"type": "string"
+		},
+		{
+			"key": "passToCreate",
+			"value": "admin12345",
+			"type": "string"
+		},
+		{
+			"key": "uidUserToModify",
+			"value": "19191919",
+			"type": "string"
+		},
+		{
+			"key": "userModified",
+			"value": "mail@mail.com",
+			"type": "string"
+		},
+		{
+			"key": "passModified",
+			"value": "123admin",
+			"type": "string"
+		},
+		{
+			"key": "userMailToModify",
+			"value": "mail@mail.com",
+			"type": "string"
+		},
+		{
+			"key": "uidUserToDelete",
+			"value": "123123123",
+			"type": "string"
+		},
+		{
+			"key": "userMailToDelete",
+			"value": "mail3@mail.com",
+			"type": "string"
+		},
+		{
+			"key": "uidAdmin",
+			"value": "121212",
+			"type": "string"
+		},
+		{
+			"key": "uidUser",
+			"value": "1212",
+			"type": "string"
+		},
+		{
+			"key": "uidCharger1",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "uidUser1",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "uidUser2",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "uidCharger2",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "randomEmail",
+			"value": "mail@mail.com",
+			"type": "string"
+		},
+		{
+			"key": "randomEmailMod",
+			"value": "mail_mod@mail.com"
+		},
+		{
+			"key": "bearer_token_admin",
+			"value": "123123",
+			"type": "string"
+		},
+		{
+			"key": "bearer_token_user",
+			"value": "123123",
+			"type": "string"
+		},
+		{
+			"key": "uidUserEx",
+			"value": ""
+		},
+		{
+			"key": "userEx",
+			"value": ""
+		}
+	]
+}
